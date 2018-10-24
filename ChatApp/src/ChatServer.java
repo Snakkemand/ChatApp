@@ -29,3 +29,34 @@ public class ChatServer {
                         break;
                     }
                 }
+                if (i == maxClientsCount) {
+                    PrintStream outS = new PrintStream(clientSocket.getOutputStream());
+                    outS.println("Whoopsie daisy! There are too many people. Try later buddy");
+                    outS.close();
+                    clientSocket.close();
+                }
+            } catch (IOException e) {
+                System.out.println(e);
+            }
+        }
+    }
+}
+class clientThread extends Thread {
+    private String clientName = null;
+    private DataInputStream inS = null;
+    private PrintStream outS = null;
+    private Socket clientSocket = null;
+    private final clientThread[] threads;
+    private int maxClientsCount;
+    public clientThread(Socket clientSocket, clientThread[] threads) {
+        this.clientSocket = clientSocket;
+        this.threads = threads;
+        maxClientsCount = threads.length;
+    }
+    public void run() {
+        int maxClientsCount = this.maxClientsCount;
+        clientThread[] threads = this.threads;
+        try {
+            inS = new DataInputStream(clientSocket.getInputStream());
+            outS = new PrintStream(clientSocket.getOutputStream());
+            String name;
