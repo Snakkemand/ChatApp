@@ -94,3 +94,41 @@ class clientThread extends Thread {
                 }
                 if (line.startsWith("@")) {
                     String[] words = line.split("\\s", 2);
+                    if (words.length > 1 && words[1] != null) {
+                        words[1] = words[1].trim();
+                        if (!words[1].isEmpty()) {
+                            synchronized (this) {
+                                for (int i = 0; i < maxClientsCount; i++) {
+                                    if (threads[i] != null && threads[i] != this
+                                            && threads[i].clientName != null
+                                            && threads[i].clientName.equals(words[0])) {
+                                        threads[i].outS.println("<" + name + "> " + words[1]);
+                                        this.outS.println(">" + name + "> " + words[1]);
+                                        break;
+                                    } } } } }
+                } else {
+                    synchronized (this) {
+                        for (int i = 0; i < maxClientsCount; i++) {
+                            if (threads[i] != null && threads[i].clientName != null) {
+                                threads[i].outS.println("<" + name + "> " + line);
+                            } } } } }
+            synchronized (this) {
+                for (int i = 0; i < maxClientsCount; i++) {
+                    if (threads[i] != null && threads[i] != this
+                            && threads[i].clientName != null) {
+                        threads[i].outS.println("* The user " + name
+                                + " is leaving the chat room! *");
+                    } } }
+            outS.println("* Goodbye " + name + " You will be missed *");
+            synchronized (this) {
+                for (int i = 0; i < maxClientsCount; i++) {
+                    if (threads[i] == this) {
+                        threads[i] = null;
+                    } } }
+            inS.close();
+            outS.close();
+            clientSocket.close();
+        } catch (IOException e) {
+        }
+    }
+}
