@@ -30,8 +30,4 @@ public class ChatClient implements Runnable {
             inS = new DataInputStream(clientSocket.getInputStream());
         }
     }
-=======
-public class ChatClient {
 
-}
->>>>>>> c94106f91830051fc0b1c73009e688b7c5199f19
