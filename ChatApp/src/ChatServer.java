@@ -48,11 +48,13 @@ class clientThread extends Thread {
     private Socket clientSocket = null;
     private final clientThread[] threads;
     private int maxClientsCount;
+
     public clientThread(Socket clientSocket, clientThread[] threads) {
         this.clientSocket = clientSocket;
         this.threads = threads;
         maxClientsCount = threads.length;
     }
+
     public void run() {
         int maxClientsCount = this.maxClientsCount;
         clientThread[] threads = this.threads;
@@ -60,3 +62,35 @@ class clientThread extends Thread {
             inS = new DataInputStream(clientSocket.getInputStream());
             outS = new PrintStream(clientSocket.getOutputStream());
             String name;
+            while (true) {
+                outS.println("Enter your username.");
+                name = inS.readLine().trim();
+                if (name.indexOf('@') == -1) {
+                    break;
+                } else {
+                    outS.println("The username should not contain '@' character.");
+                }
+            }
+            outS.println("Welcome " + name
+                    + " to the best chat room!.\nTo leave enter /quit in a new line.");
+            synchronized (this) {
+                for (int i = 0; i < maxClientsCount; i++) {
+                    if (threads[i] != null && threads[i] == this) {
+                        clientName = "@" + name;
+                        break;
+                    }
+                }
+                for (int i = 0; i < maxClientsCount; i++) {
+                    if (threads[i] != null && threads[i] != this) {
+                        threads[i].outS.println("* A new buddy " + name
+                                + " entered the chat room !!! *");
+                    }
+                }
+            }
+            while (true) {
+                String line = inS.readLine();
+                if (line.startsWith("/quit")) {
+                    break;
+                }
+                if (line.startsWith("@")) {
+                    String[] words = line.split("\\s", 2);
