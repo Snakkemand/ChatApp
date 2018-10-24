@@ -14,7 +14,7 @@ public class ChatClient implements Runnable {
     private static boolean closed = false;
     public static void main(String[] args) {
         int portNumber = 6969;
-        String ip = "172.20.10.12"; // IP we're connected on, otherwise use "localhost"
+        String ip = "localhost"; // IP we're connected on, otherwise use "localhost"
         if (args.length < 2) {
             System.out
                     .println(" <host> <portNumber>\n"
